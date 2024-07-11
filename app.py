@@ -6,6 +6,10 @@ app = Flask(__name__)
 # Setup logging
 logging.basicConfig(filename='email_opens.log', level=logging.INFO, format='%(asctime)s - %(message)s')
 
+@app.route('/')
+def home():
+    return '<h1>Welcome to the Flask App!</h1>'
+
 @app.route('/track/<email>')
 def track(email):
     # Log the open event
