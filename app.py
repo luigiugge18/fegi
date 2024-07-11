@@ -1,5 +1,6 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, make_response
 import logging
+import os
 
 app = Flask(__name__)
 
@@ -12,11 +13,16 @@ def home():
 
 @app.route('/track/<email>')
 def track(email):
-    # Log the open event
     logging.info(f'Email opened by: {email}')
-    
-    # Return a 1x1 transparent pixel
-    return send_file('pixel.png', mimetype='image/png')
+    if not os.path.exists('pixel.png'):
+        logging.error('pixel.png not found')
+        return "Tracking pixel not found", 404
+
+    response = make_response(send_file('pixel.png', mimetype='image/png'))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
