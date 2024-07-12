@@ -44,24 +44,26 @@ def download_log(filename):
 def save_logs_periodically():
     while True:
         save_logs_to_csv()
-        time.sleep(60)  # Sleep for 15 minutes (900 seconds)
+        time.sleep(900)  # Sleep for 15 minutes (900 seconds)
 
 def save_logs_to_csv():
     if os.path.exists('email_opens.log'):
         # Read the log file
         with open('email_opens.log', 'r') as f:
             lines = f.readlines()
-        
+
         # Parse log lines
         data = []
         for line in lines:
+            print(f"Processing line: {line.strip()}")  # Debugging output
             parts = line.strip().split(' - ')
             if len(parts) == 2 and 'Email opened by:' in parts[1]:
                 timestamp, message = parts
                 email = message.split('Email opened by: ')[1].split(' - ATECO: ')[0]
                 ateco = message.split(' - ATECO: ')[1] if ' - ATECO: ' in message else 'None'
                 data.append([timestamp, email, ateco])
-        
+                print(f"Added to data: {timestamp}, {email}, {ateco}")  # Debugging output
+
         # Create a DataFrame and save to CSV
         if data:
             df = pd.DataFrame(data, columns=['Timestamp', 'Email', 'ATECO'])
