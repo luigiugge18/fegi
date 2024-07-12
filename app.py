@@ -56,13 +56,15 @@ def save_logs_to_csv():
         data = []
         for line in lines:
             print(f"Processing line: {line.strip()}")  # Debugging output
-            parts = line.strip().split(' - ')
+            parts = line.strip().split(' - ', 1)
             if len(parts) == 2 and 'Email opened by:' in parts[1]:
                 timestamp, message = parts
                 email = message.split('Email opened by: ')[1].split(' - ATECO: ')[0]
                 ateco = message.split(' - ATECO: ')[1] if ' - ATECO: ' in message else 'None'
                 data.append([timestamp, email, ateco])
                 print(f"Added to data: {timestamp}, {email}, {ateco}")  # Debugging output
+            else:
+                print(f"Skipping line: {line.strip()}")  # Debugging output
 
         # Create a DataFrame and save to CSV
         if data:
