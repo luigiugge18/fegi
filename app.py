@@ -13,7 +13,8 @@ def home():
 
 @app.route('/track/<email>')
 def track(email):
-    logging.info(f'Email opened by: {email}')
+    ateco = request.args.get('ateco')
+    logging.info(f'Email opened by: {email} - ATECO: {ateco}')
     if not os.path.exists('pixel.png'):
         logging.error('pixel.png not found')
         return "Tracking pixel not found", 404
