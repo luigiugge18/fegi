@@ -44,7 +44,7 @@ def download_log(filename):
 def save_logs_periodically():
     while True:
         save_logs_to_csv()
-        time.sleep(900)  # Sleep for 15 minutes (900 seconds)
+        time.sleep(60)  # Sleep for 15 minutes (900 seconds)
 
 def save_logs_to_csv():
     if os.path.exists('email_opens.log'):
