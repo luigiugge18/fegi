@@ -1,3 +1,39 @@
+from flask import Flask, request, send_file, make_response
+import logging
+import os
+import threading
+import time
+import pandas as pd
+from datetime import datetime
+
+app = Flask(__name__)
+
+# Setup logging
+logging.basicConfig(filename='email_opens.log', level=logging.INFO, format='%(asctime)s - %(message)s')
+
+@app.route('/')
+def home():
+    return '<h1>Welcome to the Flask App!</h1>'
+
+@app.route('/track/<email>')
+def track(email):
+    ateco = request.args.get('ateco')
+    logging.info(f'Email opened by: {email} - ATECO: {ateco}')
+    if not os.path.exists('pixel.png'):
+        logging.error('pixel.png not found')
+        return "Tracking pixel not found", 404
+
+    response = make_response(send_file('pixel.png', mimetype='image/png'))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+def save_logs_periodically():
+    while True:
+        time.sleep(900)  # Sleep for 15 minutes (900 seconds)
+        save_logs_to_csv()
+
 def save_logs_to_csv():
     if os.path.exists('email_opens.log'):
         print("email_opens.log exists")
@@ -36,3 +72,8 @@ def save_logs_to_csv():
     else:
         print("email_opens.log does not exist")
         logging.error("email_opens.log does not exist")
+
+if __name__ == '__main__':
+    # Start the background thread to save logs periodically
+    threading.Thread(target=save_logs_periodically, daemon=True).start()
+    app.run(host='0.0.0.0', port=5000)
